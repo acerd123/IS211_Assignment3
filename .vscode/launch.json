@@ -11,7 +11,8 @@
             "program": "assignment3.py",
             "console": "integratedTerminal",
             "args": [
-                "--url", "http://s3.amazonaws.com/cuny-is211-spring2015/weblog.csv"
+                "--url", 
+                "http://s3.amazonaws.com/cuny-is211-spring2015/weblog.csv"
             ]
         }
     ]
