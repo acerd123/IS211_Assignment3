@@ -23,12 +23,15 @@ def process_log_data(log_data):
     image_requests = 0
     browser_counter = Counter()
     hourly_hits = Counter()
+
     reader = csv.reader(log_data)
     for row in reader:
         total_requests += 1
         path, timestamp, user_agent, status, size = row
+
         if image_extensions.match(path):
             image_requests += 1
+
         for browser, pattern in browser_patterns.items():
             if pattern.search(user_agent):
                 browser_counter[browser] += 1
@@ -49,8 +52,9 @@ def process_log_data(log_data):
 def main(url):
     print(f"Running main with URL = {url}...")
     log_data = download_file(url)
-    process_log_data = download_file(url)
     print(f"Downloaded {len(log_data)} lines of log data.")
+
+    process_log_data = download_file(url)
 
 if __name__ == "__main__":
     """Main entry point"""
