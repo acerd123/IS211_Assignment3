@@ -9,7 +9,7 @@ from datetime import datetime
 def download_file(url):
     response = requests.get(url)
     response.raise_for_status()  
-    return response.text.splitlines()
+    return response.content.decode('utf-8').splitlines()
 
 def process_log_data(log_data):
     image_extensions = re.compile(r'.*\.(jpg|gif|png)$', re.IGNORECASE)
@@ -24,8 +24,15 @@ def process_log_data(log_data):
     browser_counter = Counter()
     hourly_hits = Counter()
 
-    reader = csv.reader(log_data)
+    reader = csv.reader(log_data, delimiter=';')
+
     for row in reader:
+        print(f"Row: {row}")
+
+        if len(row) !=5:
+            print(f"Skipping malformed row: {row}")
+            continue
+
         total_requests += 1
         path, timestamp, user_agent, status, size = row
 
@@ -36,13 +43,16 @@ def process_log_data(log_data):
             if pattern.search(user_agent):
                 browser_counter[browser] += 1
                 break
+
         hour = datetime.strptime(timestamp, "%m/%d/%Y %H:%M:%S").hour
         hourly_hits[hour] += 1
-        print(row)
+
     image_percentage = (image_requests / total_requests) * 100
     print(f"Image requests account for {image_percentage:.2f}% of all requests.")
+
     most_popular_browser = browser_counter.most_common(1)[0][0]
     print(f"The most popular browser is: {most_popular_browser}")
+
     print("\nHits per hour:")
     for hour, hits in sorted(hourly_hits.items()):
         print(f"Hour {hour:02d} has {hits} hits")
@@ -51,10 +61,12 @@ def process_log_data(log_data):
 
 def main(url):
     print(f"Running main with URL = {url}...")
+
     log_data = download_file(url)
     print(f"Downloaded {len(log_data)} lines of log data.")
 
-    process_log_data = download_file(url)
+    process_log_data(log_data)
+    print("Finished processing log data.")
 
 if __name__ == "__main__":
     """Main entry point"""
