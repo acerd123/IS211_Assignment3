@@ -1,6 +1,8 @@
 import argparse
 import urllib.request
 import datetime
+import csv
+import io
 
 
 def downloadData(url):
@@ -10,10 +12,35 @@ def downloadData(url):
 
     return response
 
+def processData(file_content):
+    csv_data = csv.reader(io.StringIO(file_content))
+    image_counter = 0
+    line_counter = 0
+
+    chrome_counter = 0
+    safari_counter = 0
+    msie_counter = 0
+    ffox_counter = 0
+    for row in csv_data:
+        line_counter += 1
+        path_to_file = row[0]
+        datetime_accessed = datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")
+        browser = row[2]
+        print(f"Path = {path_to_file} | Hour accessed = {datetime_accessed.hour} | Browser = {browser}")
+        if path_to_file.endswith("jpg"):
+            image_counter += 1
+
+        if browser.find("Chrome") != -1:
+            chrome_counter += 1
+
+    percent_images = image_counter / line_counter * 100
+    print(f"Image requests account for {percent_images}% of all requests")
+    
+    
 def main(url):
     print(f"Running main with URL = {url}...")
     url_data = downloadData(url)
-    print(url_data)
+    processData(url_data)
    
     
 if __name__ == "__main__":
