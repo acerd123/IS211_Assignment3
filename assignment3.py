@@ -5,14 +5,10 @@ import datetime
 
 def downloadData(url):
     
+    with urllib.request.urlopen(url) as response:
+        response = response.read().decode("utf-8")
 
-:param URL:
-:return: the content of the url
-
-with urllib.request.urlopen(url) as response:
-    response = response.read().decode("utf-8")
-
-return response
+    return response
 
 def main(url):
     print(f"Running main with URL = {url}...")
